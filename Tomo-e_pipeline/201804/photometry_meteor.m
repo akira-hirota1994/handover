@@ -9,7 +9,7 @@
     %ID_number = string(ID_number);
     
     
-%%%  FILE OUTPUT(.pdfの出力) 
+%%%  FILE OUTPUT(.pdfの出力) 画像の出力をありにすると非常に重くなるので注意
 option_show_image = 0; %yes:1, no:0
 option_save_image = 0; %yes:1, no:0
 
@@ -25,7 +25,7 @@ version = "main"; % 'test' or 'main'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % section : データ読み込み
 
-if option_single_image == 1 && re_analyze == 1 %単体
+if option_single_image == 1 && re_analyze == 1 %再解析&1フレームだけやる場合
     if version == "test"
         data_table = readtable("test6.csv");
         recheck_list =readtable("test_recheck_photometry.csv");
@@ -74,20 +74,20 @@ if option_single_image == 1 && re_analyze == 1 %単体
     duration = data_table(index,"duration");
     duration = table2array(duration);
     loop_number = size(index);
-  
+%%%ここがメイン  
 elseif option_single_image == 0 && re_analyze == 0 %初回
     if version == "test"
         data_table = readtable("test6.csv");
     elseif version == "main"
         data_table = readtable("simultaneous_event_candidates_table_MU+Tomo-e6.csv");
-    end
-    ID = data_table(:,"ID");ID = table2array(ID);
+    end%csvファイルの読み込み
+    ID = data_table(:,"ID");ID = table2array(ID);%IDのリストを作る
     ID_list = data_table(:,"ID");ID_list = table2array(ID_list);
     image_filename = "sub" + ID + ".pdf";
-    ID ="d_fits/sub" + ID + ".fits";
+    ID ="d_fits/sub" + ID + ".fits";%読み込むfitsファイルのパス
     
-    angle = data_table(:,"Angle");angle = table2array(angle);
-    angle_rad = deg2rad(angle);
+    angle = data_table(:,"Angle");angle = table2array(angle);%回転角
+    angle_rad = deg2rad(angle);%degreeからradianに変換
     center_x = data_table(:,"X");center_y = data_table(:,"Y");
     center_x = table2array(center_x);center_y = table2array(center_y);
     slope_angle = 90 - angle;
@@ -108,7 +108,7 @@ elseif option_single_image == 0 && re_analyze == 0 %初回
     elevation_2 = table2array(elevation_2);
     duration = data_table(:,"duration");
     duration = table2array(duration);
-    pixel_width = 20;
+    pixel_width = 20;%デフォルトは矩形の幅を20ピクセルにした.変更は可能
     loop_number = size(ID);
 end
 
@@ -117,8 +117,9 @@ flux_meteor_original = [];line_intensity_original = [];
 pixel_width_modified = [];flux_meteor_modified = [];
 line_intensity_modified = [];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% section : angular velocity [deg/sec]
-
+%MUでstarting pointとend point,durationがわかっているので,角速度を出す
+%tomo-eの1ピクセルあたりの視野と露光時間(0.5秒)から一回の露光時間に流星が通過する
+%ピクセル数を調べる
 flight_distance = sqrt(abs(azimuth_1 - azimuth_2).^2 + ...
     abs(elevation_1 - elevation_2).^2);
 angular_velocity = flight_distance./duration;
@@ -132,11 +133,11 @@ through_pixel = 0.5*through_pixel;
 
 a = pixel_width*cos(deg2rad(90- slope_angle));
 b = pixel_width*sin(deg2rad(90- slope_angle));
-w1y1 = y1 - b; w1x1 = x1 + a;
-w2y1 = y1 + b; w2x1 = x1 - a;
-w1y2 = y2 - b; w1x2 = x2 + a;
-w2y2 = y2 + b; w2x2 = x2 - a;
-for i = 1:loop_number
+w1y1 = y1 - b; w1x1 = x1 + a;%まずここで矩形を作る.リダクションで求めた両端の点から
+w2y1 = y1 + b; w2x1 = x1 - a;%流星の傾きに対して垂直にpixel_widthの長さを持った
+w1y2 = y2 - b; w1x2 = x2 + a;%矩形の頂点を求める.またその頂点がフレーム外にあるなら
+w2y2 = y2 + b; w2x2 = x2 - a;%内側にずらしていく.無理な場合はエラーとして出される
+for i = 1:loop_number%極端に端っこにあると難しい.
     if angle(i,1) < 90
         while (w2x1(i,1) < 0) || (w1y1(i,1) < 0)
             x1(i,1) = x1(i,1) + 1;
@@ -169,7 +170,7 @@ l1 = [w1x1,w2x1] ;l2 = [w1y1,w2y1];
 l3 = [w1x1,w1x2] ;l4 = [w1y1,w1y2];
 l5 = [w2x1,w2x2] ;l6 = [w2y1,w2y2];
 l7 = [w1x2,w2x2] ;l8 = [w1y2,w2y2];
-LoopNum = loop_number(1,1);t = 0; %waitbar
+LoopNum = loop_number(1,1);t = 0; %waitbar,特に意味はない,それっぽく見せたかった
 flux = zeros(loop_number); 
 line_intensity = zeros(loop_number);
 h = waitbar(0,'running');
@@ -183,11 +184,11 @@ for i = 1:loop_number
     else    
         fitsfile_name = ID(i,1);
     end
-    data = fitsread(fitsfile_name);
+    data = fitsread(fitsfile_name);%ここでようやくfitsファイルを開く
     data = data(:,:,1); % 差分後の画像
-    rotate_data = imrotate(data, -1*angle(i,1));
+    rotate_data = imrotate(data, -1*angle(i,1));%画像の回転
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%矩形の頂点や流星の通過している点なども同様に回転させて,回転した後の座標で足し合わせなどを行う
     position_x = center_x(i,1) - size(data,2)/2;
     position_y = center_y(i,1) - size(data,1)/2;
     rotate_x = position_x*cos(angle_rad(i,1)) - position_y*sin(angle_rad(i,1));
@@ -251,8 +252,8 @@ for i = 1:loop_number
             fitsfile_name == "d_fits/sub661714_118.fits" ||...
             fitsfile_name == "d_fits/sub705614_052.fits"
         line_intensity(i,1) = 0;
-        flux(i,1) = 0;
-        disp("This frame is out of range.");
+        flux(i,1) = 0;%うまくいかないやつはline intensityとfluxを0にしておく
+        disp("This frame is out of range.");%矩形の幅の調整で上手くいくものは書き直される
         
         if option_single_image == 1 && re_analyze == 1
             %{
