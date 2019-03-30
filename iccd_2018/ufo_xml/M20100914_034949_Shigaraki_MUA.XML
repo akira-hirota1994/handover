@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ufoanalyzer_record version ="200"
+	 clip_name="M20100914_034949_Shigaraki_MU" o="1" y="2010" mo="9"
+	 d="14" h="3" m="49" s="49.000000"
+	 tz="32400" tme="1.000000" lid="Shigaraki" sid="200F1.8"
+	 lng="136.104370" lat="34.853970" alt="390.000000" cx="720"
+	 cy="480" fps="29.970089" interlaced="1" bbf="0"
+	 frames="64" head="30" tail="0" drop="0"
+	 dlev="0" dsize="0" sipos="0" sisize="0"
+	 trig="0" observer="Kero&Szasz" cam="Hamamatsu_ICCD" lens="Canon200mmF1.8"
+	 cap="" u2="" ua="244" memo=""
+	 az="56.533787" ev="89.584824" rot="-123.309349" vx="9.875136"
+	 yx="1.103281" dx="-7.005155" dy="13.652200" k4="0.000000"
+	 k3="0.006893" k2="-0.005560" atc="58.299999" BVF="-0.300000"
+	 maxLev="255" maxMag="6.696000" minLev="10" mimMag="10.200000"
+	 dl="11" leap="40" pixs="88" rstar="101"
+	 ddega="0.007977" ddegm="0.017546" errm="0.239767" Lmrgn="5"
+	 Rmrgn="5" Dmrgn="5" Umrgn="5">
+	<ua2_objects>
+<ua2_object
+	 fs="62" fe="62" fN="1" sN="1"
+	 sec="0.000000" av="0.000000" pix="88" bmax="23"
+	 bN="0" Lmax="915.785706" mag="5.307866" cdeg="0.000000"
+	 cdegmax="0.000000" io="3" raP="354.931915" dcP="-44.887779"
+	 av1="0.000000" x1="661.022644" y1="15.968723" x2="661.022644"
+	 y2="15.968723" az1="228.799286" ev1="85.382217" az2="228.799286"
+	 ev2="85.382217" azm="228.799286" evm="85.382217" ra1="46.960922"
+	 dc1="31.702686" ra2="46.960922" dc2="31.702686" ram="46.960922"
+	 dcm="31.702686" class="__flash" m="0" dr="-1.000000"
+	 dv="-1.000000" Vo="-1.000000" lng1="136.039093" lat1="34.807034"
+	 h1="100.000000" dist1="99.929375" gd1="7.921307" azL1="-1.000000"
+	 evL1="-1.000000" lng2="-999.000000" lat2="-999.000000" h2="-1.000000"
+	 dist2="-1.000000" gd2="-1.000000" len="0.000000" GV="0.000000"
+	 rao="-1.000000" dco="-1.000000" Voo="-1.000000" rat="0.000000"
+	 dct="0.000000" memo="">
+	<ua2_objpath>
+<ua2_fdata2 fno=" 62" b=" 23" bm="000" Lsum="   915.8" mag="+5.31" az=" 228.7992929" ev="  85.3822154" ra="  46.9609240" dec=" +31.7026870"></ua2_fdata2>
+	</ua2_objpath>
+</ua2_object>
+	</ua2_objects>
+</ufoanalyzer_record>
